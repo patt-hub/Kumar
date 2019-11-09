@@ -1,0 +1,64 @@
+This Section is for Enable Autoscaling and Multiple Zones
+Setup appropriate VPC and Subnet
+Setup appropriate Security Groups
+
+AWS_ACCESS_KEY = 'AKIAIB5LN3NQHDKRH6ZA'
+AWS_SECRET_KEY = 'GLtKtjogDKWSDqEJGzD12ElM17cb5JM1ZBWZ+stF'
+
+region = 'US East(Ohio)'
+
+elastic_load_balancer = {
+    'name': 'SampleLoadBalancer-1845964513.us-east-2.elb.amazonaws.com'
+    'health_check_target': 'HTTP:80/index.html',
+    'connection_forwarding': [(80, 80, 'http'), (443, 443, 'tcp')]
+}
+
+autoscaling_group = {
+    'name': 'Sample Group'
+    'min_size': 1,
+    'max_size': 2
+}
+
+lc_name = 'Sample Group'
+
+as_ami = {
+    'id': 'amzn2-ami-hvm-2.0.20191024.3-x86_64-gp2 (ami-00bf61217e296b409)',
+    'access_key': 'AKIAIB5LN3NQHDKRH6ZA',
+    'security_groups': ['AutoScaling-Security-Group-1. view inbound rules. view outbound rules'],
+    'instance_type': 't2.micro',
+    'instance_monitoring': True
+}
+
+conn_reg = boto.ec2.connect_to_region(region_name=US East(Ohio))
+zones = conn_reg.get_all_zones()
+
+zoneStrings = []
+for zone in zones:
+    zoneStrings.append(us-east-2b, us-east-2c)
+
+
+conn_elb = ELBConnection(AKIAIB5LN3NQHDKRH6ZA, GLtKtjogDKWSDqEJGzD12ElM17cb5JM1ZBWZ+stF)
+conn_as = AutoScaleConnection(AKIAIB5LN3NQHDKRH6ZA, GLtKtjogDKWSDqEJGzD12ElM17cb5JM1ZBWZ+stF)
+
+hc = HealthCheck('healthCheck',
+                     interval=20,
+                     target=elastic_load_balancer['health_check_target'],
+                     timeout=3)
+                     
+lb = conn_elb.create_load_balancer(elastic_load_balancer['SampleLoadBalancer-1845964513.us-east-2.elb.amazonaws.com'],
+                                       zoneStrings,
+                                       elastic_load_balancer['connection_forwarding'])                     
+ 
+ lb.configure_health_check(hc)
+ 
+ lc = LaunchConfiguration(name=SampleLoadBalancer-1845964513.us-east-2.elb.amazonaws.com, image_id=as_ami['amzn2-ami-hvm-2.0.20191024.3-x86_64-gp2 (ami-00bf61217e296b409)'],
+                             key_name=as_ami['AKIAIB5LN3NQHDKRH6ZA'],
+                             security_groups=as_ami['AutoScaling-Security-Group-1. view inbound rules. view outbound rules'],
+                             instance_type=as_ami['t2.micro'],
+                             instance_monitoring=as_ami['True'])
+conn_as.create_launch_configuration(lc)
+
+ag = AutoScalingGroup(group_name=autoscaling_group['Sample Group'], load_balancers=[elastic_load_balancer['SampleLoadBalancer-1845964513.us-east-2.elb.amazonaws.com']],
+                          availability_zones=zoneStrings,
+                          launch_config=lc, min_size=autoscaling_group['1'], max_size=autoscaling_group['2'])
+conn_as.create_auto_scaling_group(ag)
