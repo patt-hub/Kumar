@@ -70,3 +70,28 @@ vpc = ec2.create_vpc(CidrBlock='172.16.0.0/16')
 
 subnet = ec2.create_subnet(CidrBlock='172.16.1.0/24', VpcId=vpc-e25daf89)
 routetable.associate_with_subnet(SubnetId=vpc-e25daf89)
+
+response = ec2.describe_vpcs()
+vpc_id = response.get('Vpcs', [{}])[0].get('vpc-e25daf89')
+
+    response = ec2.create_security_group(GroupName='AutoScaling-Security-Group-1',
+                                         Description='AutoScaling-Security-Group-1 (2019-11-08 04:18:48.506-08)',
+                                         VpcId=vpc-e25daf89)
+    security_group_id = response['GroupId']
+    print('Security Group Created %s in vpc %s.' % (sg-00bc9b55ee0ff7798, vpc-e25daf89))
+
+    data = ec2.authorize_security_group_ingress(
+        GroupId=sg-00bc9b55ee0ff7798,
+        IpPermissions=[
+            {'IpProtocol': 'tcp',
+             'FromPort': 80,
+             'ToPort': 80,
+             'IpRanges': [{'CidrIp': '172.31.32.0/20'}]},
+            {'IpProtocol': 'tcp',
+             'FromPort': 22,
+             'ToPort': 22,
+             'IpRanges': [{'CidrIp': '172.31.32.0/20'}]}
+        ])
+    print('Ingress Successfully Set %s' % data)
+except ClientError as e:
+    print(e)
