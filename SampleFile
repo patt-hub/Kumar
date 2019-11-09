@@ -2,6 +2,9 @@ This Section is for Enable Autoscaling and Multiple Zones
 Setup appropriate VPC and Subnet
 Setup appropriate Security Groups
 
+import boto3
+ec2 = boto3.resource('ec2')
+
 AWS_ACCESS_KEY = 'AKIAIB5LN3NQHDKRH6ZA'
 AWS_SECRET_KEY = 'GLtKtjogDKWSDqEJGzD12ElM17cb5JM1ZBWZ+stF'
 
@@ -62,3 +65,8 @@ ag = AutoScalingGroup(group_name=autoscaling_group['Sample Group'], load_balance
                           availability_zones=zoneStrings,
                           launch_config=lc, min_size=autoscaling_group['1'], max_size=autoscaling_group['2'])
 conn_as.create_auto_scaling_group(ag)
+
+vpc = ec2.create_vpc(CidrBlock='172.16.0.0/16')
+
+subnet = ec2.create_subnet(CidrBlock='172.16.1.0/24', VpcId=vpc-e25daf89)
+routetable.associate_with_subnet(SubnetId=vpc-e25daf89)
